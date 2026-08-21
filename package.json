@@ -1,0 +1,13 @@
+{
+  "name": "campussphere",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["backend", "frontend"],
+  "scripts": {
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "test": "npm --workspace backend test && npm --workspace frontend test",
+    "build": "npm --workspace frontend run build"
+  }
+}
+

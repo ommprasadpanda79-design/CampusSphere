@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+enum NoticeTarget {
+  ALL
+  STUDENT
+  FACULTY
+  ADMIN
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  passwordHash  String         @map("password_hash")
+  role          Role
+  department    String
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  taughtCourses Course[]       @relation("CourseFaculty")
+  enrollments   Enrollment[]
+  attendance    Attendance[]
+  marks         Mark[]
+  notices       Notice[]       @relation("NoticeAuthor")
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String       @id @default(cuid())
+  name        String
+  code        String       @unique
+  scheduleDay String       @map("schedule_day")
+  startTime   String       @map("start_time")
+  room        String
+  facultyId   String       @map("faculty_id")
+  faculty     User         @relation("CourseFaculty", fields: [facultyId], references: [id], onDelete: Restrict)
+  enrollments Enrollment[]
+  attendance  Attendance[]
+  marks       Mark[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id        String @id @default(cuid())
+  studentId String @map("student_id")
+  courseId  String @map("course_id")
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([courseId])
+  @@map("enrollments")
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  studentId String           @map("student_id")
+  courseId  String           @map("course_id")
+  date      DateTime         @db.Date
+  status    AttendanceStatus
+  student   User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId, date])
+  @@index([courseId, date])
+  @@map("attendance")
+}
+
+model Mark {
+  id         String   @id @default(cuid())
+  studentId  String   @map("student_id")
+  courseId   String   @map("course_id")
+  examType   String   @map("exam_type")
+  score      Float
+  maxScore   Float    @map("max_score")
+  recordedAt DateTime @default(now()) @map("recorded_at")
+  student    User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId, examType])
+  @@index([courseId])
+  @@map("marks")
+}
+
+model Notice {
+  id         String       @id @default(cuid())
+  title      String
+  content    String
+  postedById String       @map("posted_by")
+  targetRole NoticeTarget @default(ALL) @map("target_role")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  postedBy   User         @relation("NoticeAuthor", fields: [postedById], references: [id], onDelete: Restrict)
+
+  @@map("notices")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique @map("token_hash")
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}

@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply border-slate-200; }
+  body { @apply m-0 bg-canvas font-sans text-ink antialiased; }
+  button, input, select, textarea { font: inherit; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { @apply outline-none ring-2 ring-teal-500 ring-offset-2; }
+}
+
+@layer components {
+  .card { @apply rounded-2xl border border-white/80 bg-white p-5 shadow-card; }
+  .label { @apply mb-1.5 block text-xs font-bold uppercase tracking-[0.13em] text-slate-500; }
+  .input { @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15; }
+  .btn-primary { @apply inline-flex items-center justify-center rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-secondary { @apply inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:border-slate-300 hover:bg-slate-50; }
+  .btn-danger { @apply inline-flex items-center justify-center rounded-lg bg-coral-50 px-3 py-2 text-xs font-bold text-coral-600 transition hover:bg-red-100; }
+  .section-title { @apply font-display text-xl font-bold tracking-tight text-ink; }
+  .table-wrap { @apply overflow-x-auto rounded-xl border border-slate-100; }
+  .data-table { @apply w-full min-w-[620px] border-collapse text-left text-sm; }
+  .data-table th { @apply bg-slate-50 px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500; }
+  .data-table td { @apply border-t border-slate-100 px-4 py-3 text-slate-700; }
+  .data-table tbody tr { @apply transition hover:bg-slate-50/70; }
+}
+
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-float-in { animation: float-in .45s ease-out both; }
+
